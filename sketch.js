@@ -1,20 +1,20 @@
-let populationSize = 32
+let populationSize = 128
 let population = []
 
-const RED_BIG = [1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
-const RED_MEDIUM = [1, 1, 0, 0, 0, 0, 1, 1, 0, 0]
-const RED_STANDARD = [1, 1, 0, 0, 0, 0, 1, 1, 1, 0]
-const RED_SMALL = [1, 1, 0, 0, 0, 0, 1, 1, 1, 1]
+const RED_BIG = new Genetics([1, 1, 0, 0, 0, 0, 0, 0, 0, 0])
+const RED_MEDIUM = new Genetics([1, 1, 0, 0, 0, 0, 1, 1, 0, 0])
+const RED_STANDARD = new Genetics([1, 1, 0, 0, 0, 0, 1, 1, 1, 0])
+const RED_SMALL = new Genetics([1, 1, 0, 0, 0, 0, 1, 1, 1, 1])
 
-const GREEN_BIG = [0, 0, 1, 1, 0, 0, 0, 0, 0, 0]
-const GREEN_MEDIUM = [0, 0, 1, 1, 0, 0, 1, 1, 0, 0]
-const GREEN_STANDARD = [0, 0, 1, 1, 0, 0, 1, 1, 1, 0]
-const GREEN_SMALL = [0, 0, 1, 1, 0, 0, 1, 1, 1, 1]
+const GREEN_BIG = new Genetics([0, 0, 1, 1, 0, 0, 0, 0, 0, 0])
+const GREEN_MEDIUM = new Genetics([0, 0, 1, 1, 0, 0, 1, 1, 0, 0])
+const GREEN_STANDARD = new Genetics([0, 0, 1, 1, 0, 0, 1, 1, 1, 0])
+const GREEN_SMALL = new Genetics([0, 0, 1, 1, 0, 0, 1, 1, 1, 1])
 
-const BLUE_BIG = [0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
-const BLUE_MEDIUM = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0]
-const BLUE_STANDARD = [0, 0, 0, 0, 1, 1, 1, 1, 1, 0]
-const BLUE_SMALL = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
+const BLUE_BIG = new Genetics([0, 0, 0, 0, 1, 1, 0, 0, 0, 0])
+const BLUE_MEDIUM = new Genetics([0, 0, 0, 0, 1, 1, 1, 1, 0, 0])
+const BLUE_STANDARD = new Genetics([0, 0, 0, 0, 1, 1, 1, 1, 1, 0])
+const BLUE_SMALL = new Genetics([0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
 
 const genePool = [
   RED_BIG, RED_MEDIUM, RED_STANDARD, RED_SMALL,
@@ -28,8 +28,8 @@ function setup() {
 
   while (population.length < populationSize) {
     const randomIndex = Math.floor(Math.random() * genePool.length);
-    const genes = genePool[randomIndex];
-    const sym = new Sym({genes});
+    const genetics = genePool[randomIndex];
+    const sym = new Sym({genetics});
     if (left > width - sym.size()) {
       top += 128;
       left = 16 + sym.size() / 2;
@@ -41,10 +41,11 @@ function setup() {
     left += sym.size() / 2 + 16
   }
 
-  frameRate(1)
+  frameRate(60)
 }
 
 let timeElapsed = 0;
+let timeBetweenBreeding = 16
 
 function draw() {
   timeElapsed += deltaTime;
@@ -56,7 +57,7 @@ function draw() {
     strokeWeight(sym.size());
     point(sym.position.x, sym.position.y)
 
-    if (timeElapsed < 1000) break;
+    if (timeElapsed < timeBetweenBreeding) continue;
     const other = i + 1 === population.length ? first : population[i + 1]
     const child = sym.breed(other);
     const childX = (sym.position.x + other.position.x) / 2;
@@ -64,6 +65,6 @@ function draw() {
     child.position = createVector(childX, childY)
     population[i] = child
   }
-  if (timeElapsed > 1000) timeElapsed -= 1000;
+  if (timeElapsed > timeBetweenBreeding) timeElapsed -= timeBetweenBreeding;
 
 }
