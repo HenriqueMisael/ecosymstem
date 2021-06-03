@@ -1,70 +1,68 @@
-let populationSize = 128
-let population = []
+const resources = {}
 
-const RED_BIG = new Genetics([1, 1, 0, 0, 0, 0, 0, 0, 0, 0])
-const RED_MEDIUM = new Genetics([1, 1, 0, 0, 0, 0, 1, 1, 0, 0])
-const RED_STANDARD = new Genetics([1, 1, 0, 0, 0, 0, 1, 1, 1, 0])
-const RED_SMALL = new Genetics([1, 1, 0, 0, 0, 0, 1, 1, 1, 1])
+/**
+ * @type {Hut[]}
+ */
+const huts = []
+/**
+ * @type {Bush[]}
+ */
+const bushes = []
 
-const GREEN_BIG = new Genetics([0, 0, 1, 1, 0, 0, 0, 0, 0, 0])
-const GREEN_MEDIUM = new Genetics([0, 0, 1, 1, 0, 0, 1, 1, 0, 0])
-const GREEN_STANDARD = new Genetics([0, 0, 1, 1, 0, 0, 1, 1, 1, 0])
-const GREEN_SMALL = new Genetics([0, 0, 1, 1, 0, 0, 1, 1, 1, 1])
-
-const BLUE_BIG = new Genetics([0, 0, 0, 0, 1, 1, 0, 0, 0, 0])
-const BLUE_MEDIUM = new Genetics([0, 0, 0, 0, 1, 1, 1, 1, 0, 0])
-const BLUE_STANDARD = new Genetics([0, 0, 0, 0, 1, 1, 1, 1, 1, 0])
-const BLUE_SMALL = new Genetics([0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
-
-const genePool = [
-  RED_BIG, RED_MEDIUM, RED_STANDARD, RED_SMALL,
-  GREEN_BIG, GREEN_MEDIUM, GREEN_STANDARD, GREEN_SMALL,
-  BLUE_BIG, BLUE_MEDIUM, BLUE_STANDARD, BLUE_SMALL
-]
-
-function setup() {
-  createCanvas(1280, 720);
-  let [top, left] = [128, 16]
-
-  while (population.length < populationSize) {
-    const randomIndex = Math.floor(Math.random() * genePool.length);
-    const genetics = genePool[randomIndex];
-    const sym = new Sym({genetics});
-    if (left > width - sym.size()) {
-      top += 128;
-      left = 16 + sym.size() / 2;
-    } else {
-      left += sym.size() / 2;
-    }
-    sym.position = createVector(left, top);
-    population.push(sym)
-    left += sym.size() / 2 + 16
-  }
-
-  frameRate(60)
+function preload() {
+  ['red', 'green', 'blue'].forEach(color => {
+    resources[`hut-${color}`] = loadImage(`assets/hut/${color}.svg`);
+  });
+  range(11).forEach((i) => {
+    resources[`bush-${i}`] = loadImage(`assets/bush/${i}.svg`);
+  })
+  resources['sym'] = loadImage("assets/sym.svg");
 }
 
-let timeElapsed = 0;
-let timeBetweenBreeding = 16
+function randomPosition() {
+  const x = (Math.random() - 0.5) * width;
+  const y = (Math.random() - 0.5) * height;
+  return createVector(x, y);
+}
+
+function setup() {
+  frameRate(60)
+  createCanvas(1280, 720, WEBGL);
+
+  huts.push(new Hut('red', 1, randomPosition()))
+  range(10).forEach(() => {
+    bushes.push(new Bush(0.5 + Math.random(), Math.random(), randomPosition()))
+  })
+}
+
+const dayDuration = 2048
+let timeElapsed = 0
 
 function draw() {
   timeElapsed += deltaTime;
-  background(200);
-  let first = population[0];
-  for (let i = 0; i < population.length; i++) {
-    const sym = population[i];
-    stroke(sym.color());
-    strokeWeight(sym.size());
-    point(sym.position.x, sym.position.y)
+  const daysPast = Math.floor(timeElapsed / dayDuration);
 
-    if (timeElapsed < timeBetweenBreeding) continue;
-    const other = i + 1 === population.length ? first : population[i + 1]
-    const child = sym.breed(other);
-    const childX = (sym.position.x + other.position.x) / 2;
-    const childY = (sym.position.y + other.position.y) / 2;
-    child.position = createVector(childX, childY)
-    population[i] = child
-  }
-  if (timeElapsed > timeBetweenBreeding) timeElapsed -= timeBetweenBreeding;
+  background(220)
 
+  imageMode(CENTER);
+  huts.forEach(hut => {
+    const {x, y} = hut.position
+    let color = hut.color;
+    let size = hut.size();
+    image(resources[`hut-${color}`], x, y - size / 2, size, size)
+  })
+  bushes.forEach((bush, i) => {
+    if (!bush.grow(daysPast)) {
+      bushes.splice(i, 1)
+      return;
+    }
+
+    const size = 24;
+    const {y, x} = bush.position;
+    const foodAmount = bush.food();
+    console.log(foodAmount)
+    image(resources[`bush-${foodAmount}`], x, y - size / 2, size, size)
+  })
+
+  if (daysPast > 0) timeElapsed -= dayDuration * daysPast;
 }
