@@ -3,33 +3,30 @@
  *
  * @typedef Sym
  * @property {Genetics} genetics
+ * @property {?Hut} home
  * @property {?{x: number, y:number}} position
  *
  * @property {function(Sym):Sym} breed
  */
 /**
- * @param {object} [options]
- * @param {{x: number, y:number}} [options.position]
- * @param {Genetics} [options.genetics]
+ * @param {{x: number, y:number}} [position]
+ * @param {Hut} [home]
+ * @param {Genetics} [genetics]
  *
  * @constructor
  */
-function Sym(options = {}) {
-  this.genetics = options.genetics ?? new Genetics();
-  this.position = options.position ?? null;
+function Sym(genetics, home, position) {
+  this.genetics = genetics ?? new Genetics();
+  this.home = home ?? null;
+  this.position = position ?? null;
 }
 
-Sym.prototype.color = function () {
-  if (!this._color) {
-    const [r, g, b] = this.genetics.getColorPhenotypes();
-    this._color = color(r, g, b);
-  }
-  return this._color;
-}
-
+/**
+ * @returns {number} size of Sym
+ */
 Sym.prototype.size = function () {
   if (!this._size) {
-    this._size = this.genetics.getSizePhenotypes()
+    this._size = this.genetics.getSizePhenotypes() * 2
   }
   return this._size;
 }
@@ -41,5 +38,16 @@ Sym.prototype.size = function () {
  * @param {Sym} other
  */
 Sym.prototype.breed = function (other) {
-  return new Sym({genetics: this.genetics.crossover(other.genetics)});
+  return new Sym(this.genetics.crossover(other.genetics));
+}
+
+/**
+ * @params {number} timeOfDay
+ * @returns {boolean} if it exited the map
+ */
+Sym.prototype.update = function (timeOfDay) {
+  if (timeOfDay < 18) return false;
+
+  this.home.openFor([this]);
+  return true;
 }

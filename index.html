@@ -2,11 +2,55 @@
 <html lang="en">
 <head>
     <title>Getting Started with ml5.js</title>
-    <!-- p5 -->
+    <style>
+        div.clock {
+            display: flex;
+            flex-direction: column;
+        }
+
+        div.clock > .time-indicator {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        progress.day {
+            width: 100%;
+        }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.min.js"></script>
 </head>
 
 <body>
+<div class="clock">
+    <div class="time-indicator">
+        <div>00</div>
+        <div>01</div>
+        <div>02</div>
+        <div>03</div>
+        <div>04</div>
+        <div>05</div>
+        <div>06</div>
+        <div>07</div>
+        <div>08</div>
+        <div>09</div>
+        <div>10</div>
+        <div>11</div>
+        <div>12</div>
+        <div>13</div>
+        <div>14</div>
+        <div>15</div>
+        <div>16</div>
+        <div>17</div>
+        <div>18</div>
+        <div>19</div>
+        <div>20</div>
+        <div>21</div>
+        <div>22</div>
+        <div>23</div>
+        <div>24</div>
+    </div>
+    <progress class="day" max="24" value="8"></progress>
+</div>
 <script src="utils/index.js"></script>
 <script src="sym/genetics.js"></script>
 <script src="sym/sym.js"></script>

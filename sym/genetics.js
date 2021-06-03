@@ -12,21 +12,12 @@
  * @constructs Genetics
  */
 function Genetics(chain) {
-  this.chain = chain ?? [...Array(9)].map(() => Math.random());
-}
-
-Genetics.prototype.getColorPhenotypes = function () {
-  const r = Math.floor(Number(this.chain.slice(0, 2).reduce((acc, v) => acc * v, 255)));
-  const g = Math.floor(Number(this.chain.slice(2, 4).reduce((acc, v) => acc * v, 255)));
-  const b = Math.floor(Number(this.chain.slice(4, 6).reduce((acc, v) => acc * v, 255)));
-
-  return [r, g, b]
+  this.chain = chain ?? range(4).map(() => Math.random());
 }
 
 Genetics.prototype.getSizePhenotypes = function () {
-  const base = 16;
-  const [sub0, sub1, sub2, sub3] = this.chain.slice(6, 10);
-  return Math.floor(base * 5 - sub0 * base - sub1 * base - sub2 * base - sub3 * base);
+  const [add0, add1, sub0, sub1] = this.chain.slice(0, 4);
+  return Math.floor(16 + add0 + add1 - sub0 - sub1);
 }
 
 Genetics.prototype.crossover = function (other) {
