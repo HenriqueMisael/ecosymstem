@@ -1,10 +1,9 @@
 /**
  * Simulated being that have genes that describe its appearance, capacities and behaviour
  *
- * @typedef Sym
+ * @typedef {GameObject} Sym
  * @property {Genetics} genetics
  * @property {?Hut} home
- * @property {?{x: number, y:number}} position
  *
  * @property {function(Sym):Sym} breed
  */
@@ -16,10 +15,12 @@
  * @constructor
  */
 function Sym(genetics, home, position) {
+  GameObject.call(this, position);
   this.genetics = genetics ?? new Genetics();
   this.home = home ?? null;
-  this.position = position ?? null;
 }
+
+Sym.prototype.__proto__ = GameObject.prototype;
 
 /**
  * @returns {number} size of Sym

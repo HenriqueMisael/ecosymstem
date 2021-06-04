@@ -1,6 +1,6 @@
 /**
  * Type of vegetation that grows food
- * @typedef Bush
+ * @typedef {GameObject} Bush
  * @property {number} production - amount of food it have produced
  * @property {number} growingRate - amount of food it generates every day
  * @property {number} depletingRate - amount of food it generates every day
@@ -16,9 +16,9 @@
  * @constructor
  */
 function Bush(growingRate = 1, depletingRate = 0.5, position = null) {
+  GameObject.call(this, position)
   this.growingRate = growingRate;
   this.depletingRate = depletingRate;
-  this.position = position;
   this.production = 0;
   this.maxProduction = 10;
 }

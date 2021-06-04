@@ -1,9 +1,8 @@
 /**
  * A hut is a place where Syms can sleep, breed and protect itself
- * @typedef Hut
- * @property color
+ * @typedef {GameObject} Hut
+ * @property {'red' | 'blue' | 'green'} color
  * @property {number} level
- * @property {?{x:number, y:number}} position
  *
  * @property {function():number} size
  * @property {function(timeOfDay:number):Sym[]} update
@@ -17,10 +16,10 @@
  * @constructor
  */
 function Hut(color, level, position = null, population = []) {
+  GameObject.call(this, position)
   this.color = color;
   this.level = level;
-  this.position = position
-  this.population = population
+  this.population = population;
 
   this.population.forEach(sym => {
     sym.home = this;
