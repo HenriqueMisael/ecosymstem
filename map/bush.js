@@ -8,6 +8,7 @@
  *
  * @property {function():number} food
  * @property {function(number):void} grow
+ * @property {function():number} collect
  */
 /**
  * @param {number} [growingRate]
@@ -19,7 +20,7 @@ function Bush(growingRate = 1, depletingRate = 0.5, position = null) {
   GameObject.call(this, position)
   this.growingRate = growingRate;
   this.depletingRate = depletingRate;
-  this.production = 0;
+  this.production = 2;
   this.maxProduction = 10;
 }
 
@@ -41,4 +42,15 @@ Bush.prototype.grow = function (daysPast) {
   this.production = Math.min(this.maxProduction, this.production + daysPast * (this.growingRate - this.depletingRate))
 
   return this.production >= 0;
+}
+
+
+/**
+ * Collects food from bush
+ * @returns {number} amount of food collected
+ */
+Bush.prototype.collect = function () {
+  if (this.food() < 1) return 0;
+  this.production -= 1
+  return 1;
 }

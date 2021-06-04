@@ -40,7 +40,7 @@ Hut.prototype.size = function () {
 Hut.prototype.update = function (timeOfDay) {
   if (timeOfDay >= 6 && timeOfDay < 18) {
     const foragers = this.population.splice(0);
-    foragers.forEach(forager => forager.position = this.position)
+    foragers.forEach(forager => forager.position = this.position.copy())
     return foragers
   }
   return [];

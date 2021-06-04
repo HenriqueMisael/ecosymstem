@@ -12,12 +12,17 @@
  * @constructs Genetics
  */
 function Genetics(chain) {
-  this.chain = chain ?? range(4).map(() => Math.random());
+  this.chain = chain ?? range(7).map(() => Math.random());
 }
 
 Genetics.prototype.getSizePhenotypes = function () {
   const [add0, add1, sub0, sub1] = this.chain.slice(0, 4);
-  return Math.floor(16 + add0 + add1 - sub0 - sub1);
+  return 16 + add0 + add1 - sub0 - sub1;
+}
+
+Genetics.prototype.getSpeedPhenotypes = function () {
+  const [add0, add1, sub0] = this.chain.slice(4, 7);
+  return 1 + add0 + add1 - sub0;
 }
 
 Genetics.prototype.crossover = function (other) {

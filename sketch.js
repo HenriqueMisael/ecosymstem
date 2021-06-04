@@ -34,13 +34,13 @@ function setup() {
   createCanvas(1280, 640, WEBGL);
 
   huts.push(new Hut('red', 1, randomPosition(), [new Sym(), new Sym()]))
-  range(10).forEach(() => {
+  range(30).forEach(() => {
     bushes.push(new Bush(0.5 + Math.random(), Math.random(), randomPosition()))
   })
 }
 
-const dayDuration = 6144;
-let timeElapsed = 0;
+const dayDuration = 60000;
+let timeElapsed = 15000;
 
 function draw() {
   timeElapsed += deltaTime;
@@ -76,7 +76,7 @@ function draw() {
     const size = sym.size();
     image(resources['sym'], x, y - size / 2, size, size)
 
-    if (sym.update(timeOfDay)) syms.splice(i, 1)
+    if (sym.update(timeOfDay, bushes)) syms.splice(i, 1)
   })
 
   if (daysPast > 0) timeElapsed -= dayDuration * daysPast;
