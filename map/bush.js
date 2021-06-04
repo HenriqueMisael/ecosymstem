@@ -38,6 +38,7 @@ Bush.prototype.food = function () {
 Bush.prototype.grow = function (daysPast) {
   if (this.production === this.maxProduction) return true;
 
-  this.production += Math.max(daysPast * (this.growingRate - this.depletingRate), this.maxProduction)
+  this.production = Math.min(this.maxProduction, this.production + daysPast * (this.growingRate - this.depletingRate))
+
   return this.production >= 0;
 }
