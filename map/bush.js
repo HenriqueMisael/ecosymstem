@@ -20,8 +20,8 @@ function Bush(growingRate = 1, depletingRate = 0.5, position = null) {
   GameObject.call(this, position)
   this.growingRate = growingRate;
   this.depletingRate = depletingRate;
-  this.production = 2;
   this.maxProduction = 10;
+  this.production = growingRate * Math.random() * this.maxProduction;
 }
 
 Bush.prototype = Object.create(GameObject);

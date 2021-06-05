@@ -39,11 +39,15 @@ function setup() {
   })
 }
 
-const dayDuration = 60000;
+function gameSpeed() {
+  return (document.getElementById('speed').value ?? 64) / 4;
+}
+
+const dayDuration = 480000;
 let timeElapsed = 0;
 
 function draw() {
-  timeElapsed += deltaTime;
+  timeElapsed += deltaTime * gameSpeed();
   const daysPast = Math.floor(timeElapsed / dayDuration);
   const timeOfDay = timeElapsed / dayDuration * 24
 

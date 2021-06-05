@@ -4,10 +4,14 @@
  * @typedef {GameObject} Sym
  * @property {Genetics} genetics
  * @property {?Hut} home
- * @property {?Bush} _target
+ * @property {?GameObject} _target
  * @property {number} _food
  *
  * @property {function(Sym):Sym} breed
+ * @property {function(GameObject):void} moveTowards
+ * @property {function():GameObject} findTarget
+ * @property {function(timeOfDay:number):boolean} update
+ * @property {function():boolean} arrivedAtTarget
  */
 /**
  * @param {{x: number, y:number}} [position]
@@ -65,6 +69,30 @@ Sym.prototype.breed = function (other) {
 }
 
 /**
+ * Find a target to go towards based on decision making process
+ */
+Sym.prototype.findTarget = function () {
+  return bushes.reduce((acc, bush) => {
+    const food = bush.food();
+    if (food <= 0) return acc;
+    const distance = this.position.dist(bush.position);
+    if (distance < (acc?.distance ?? Number.POSITIVE_INFINITY)) return {
+      distance,
+      bush
+    };
+    return acc;
+  }, null)?.bush ?? this.home
+}
+
+/**
+ * @returns {boolean} if the Sym arrived at current target. If there is not target, false
+ */
+Sym.prototype.arrivedAtTarget = function () {
+  if (!this._target) return false;
+  return this._target.position.dist(this.position) <= 1
+}
+
+/**
  *
  * @param {number} timeOfDay
  * @param {Bush[]} bushes - bushes it at line of sight
@@ -72,42 +100,37 @@ Sym.prototype.breed = function (other) {
  * @returns {boolean} if it exited the map
  */
 Sym.prototype.update = function (timeOfDay, bushes) {
-  if (this._target) {
-    if (this._target instanceof Bush && this._target.food() <= 0) {
-      this._target = null;
-    } else {
-      const target = this._target.position.copy()
-      const distance = target.dist(this.position);
-      if (distance <= 1) {
-        if (this._target instanceof Bush) {
-          this._food += this._target.collect();
-          if (this.isAtCarryLimit()) {
-            this._target = this.home;
-          }
-        } else if (this._target instanceof Hut) {
-          this._food -= this._target.store(this._food);
-          this._target = null;
-        }
-      } else {
-        target.sub(this.position)
-        target.normalize()
-        target.mult(this.speed())
-        this.position.add(target);
-      }
-    }
-  } else {
-    const nearestBush = bushes.reduce((acc, bush) => {
-      const food = bush.food();
-      if (food <= 0) return acc;
-      const distance = this.position.dist(bush.position);
-      if (distance < (acc?.distance ?? Number.POSITIVE_INFINITY)) return {distance, bush};
-      return acc;
-    }, null)?.bush
-    if (nearestBush) this._target = nearestBush;
+  if (timeOfDay > 18) this._target = this.home;
+  if (this._target instanceof Bush && this._target.food() <= 0) {
+    this._target = null;
   }
 
-  if (timeOfDay < 18) return false;
+  if (!this._target) this._target = this.findTarget()
 
-  this.home.openFor([this]);
-  return true;
+  if (!this.arrivedAtTarget()) {
+    this.moveTowards(this._target)
+  } else {
+    if (this._target instanceof Bush) {
+      this._food += this._target.collect();
+      if (this.isAtCarryLimit()) {
+        this._target = this.home;
+      }
+    } else if (this._target === this.home) {
+      this._food -= this.home.store(this._food);
+      this._target = null;
+      if (timeOfDay > 18) {
+        this.home.openFor([this]);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * Move towards another game object
+ * @param {GameObject} gameObject
+ */
+Sym.prototype.moveTowards = function (gameObject) {
+  GameObject.prototype.moveTowardsAtSpeed.call(this, gameObject, this.speed())
 }
