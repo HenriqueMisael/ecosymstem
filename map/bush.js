@@ -24,6 +24,8 @@ function Bush(growingRate = 1, depletingRate = 0.5, position = null) {
   this.maxProduction = 10;
 }
 
+Bush.prototype = Object.create(GameObject);
+
 /**
  * @returns {number} amount of food it haves for collecting
  */

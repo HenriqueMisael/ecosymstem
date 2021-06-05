@@ -25,7 +25,7 @@ function Sym(genetics, home, position) {
   this._food = 0;
 }
 
-Sym.prototype.__proto__ = GameObject.prototype;
+Sym.prototype = Object.create(GameObject);
 
 /**
  * @returns {number} size of Sym
@@ -51,7 +51,7 @@ Sym.prototype.speed = function () {
  * @returns {boolean} if the Sym is currently carrying too much
  */
 Sym.prototype.isAtCarryLimit = function () {
-  return this._food >= this.size();
+  return this._food >= Math.floor(this.size() / 2);
 }
 
 /**
@@ -72,7 +72,6 @@ Sym.prototype.breed = function (other) {
  * @returns {boolean} if it exited the map
  */
 Sym.prototype.update = function (timeOfDay, bushes) {
-  console.log(typeof this._target)
   if (this._target) {
     if (this._target instanceof Bush && this._target.food() <= 0) {
       this._target = null;
@@ -80,9 +79,14 @@ Sym.prototype.update = function (timeOfDay, bushes) {
       const target = this._target.position.copy()
       const distance = target.dist(this.position);
       if (distance <= 1) {
-        this._food += this._target.collect();
-        if (this.isAtCarryLimit()) {
-          this._target = this.home;
+        if (this._target instanceof Bush) {
+          this._food += this._target.collect();
+          if (this.isAtCarryLimit()) {
+            this._target = this.home;
+          }
+        } else if (this._target instanceof Hut) {
+          this._food -= this._target.store(this._food);
+          this._target = null;
         }
       } else {
         target.sub(this.position)

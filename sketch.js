@@ -40,7 +40,7 @@ function setup() {
 }
 
 const dayDuration = 60000;
-let timeElapsed = 15000;
+let timeElapsed = 0;
 
 function draw() {
   timeElapsed += deltaTime;

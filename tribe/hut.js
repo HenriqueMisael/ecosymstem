@@ -3,10 +3,12 @@
  * @typedef {GameObject} Hut
  * @property {'red' | 'blue' | 'green'} color
  * @property {number} level
+ * @property {number} _food
  *
  * @property {function():number} size
  * @property {function(timeOfDay:number):Sym[]} update
  * @property {function(newcomers:Sym[]):void} openFor
+ * @property {function(foodToStore:number):number} store
  */
 /**
  * @param {'red' | 'blue' | 'green'} color
@@ -25,6 +27,8 @@ function Hut(color, level, position = null, population = []) {
     sym.home = this;
   })
 }
+
+Hut.prototype = Object.create(GameObject);
 
 /**
  * @returns {number} size of hut
@@ -51,4 +55,13 @@ Hut.prototype.update = function (timeOfDay) {
  */
 Hut.prototype.openFor = function (newcomers) {
   this.population.push(...newcomers);
+}
+
+
+/**
+ * @params {number} foodToStore - food to be stored in the Hut
+ */
+Hut.prototype.store = function (foodToStore) {
+  this._food += foodToStore;
+  return foodToStore;
 }
