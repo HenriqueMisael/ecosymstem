@@ -33,8 +33,8 @@ function setup() {
   frameRate(60)
   createCanvas(1280, 640, WEBGL);
 
-  huts.push(new Hut('red', 1, randomPosition(), [new Sym(), new Sym()]))
-  range(30).forEach(() => {
+  huts.push(new Hut('red', 1, randomPosition(), range(10).map(() => new Sym())))
+  range(50).forEach(() => {
     bushes.push(new Bush(0.5 + Math.random(), Math.random(), randomPosition()))
   })
 }

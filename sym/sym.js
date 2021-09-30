@@ -4,6 +4,7 @@
  * @typedef {GameObject} Sym
  * @property {Genetics} genetics
  * @property {?Hut} home
+ * @property {string} fullname
  * @property {?GameObject} _target
  * @property {number} _food
  *
@@ -24,6 +25,7 @@ function Sym(genetics, home, position) {
   GameObject.call(this, position);
   this.genetics = genetics ?? new Genetics();
   this.home = home ?? null;
+  this.fullname = generateName();
 
   this._target = null;
   this._food = 0;
@@ -116,7 +118,7 @@ Sym.prototype.update = function (timeOfDay, bushes) {
         this._target = this.home;
       }
     } else if (this._target === this.home) {
-      this._food -= this.home.store(this._food);
+      this._food -= this.home.store(this._food, this);
       this._target = null;
       if (timeOfDay > 18) {
         this.home.openFor([this]);
